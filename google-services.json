@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "688264723643",
+    "firebase_url": "https://myipl11.firebaseio.com",
+    "project_id": "myipl11",
+    "storage_bucket": "myipl11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688264723643:android:f283de645fbb064eddbd9e",
+        "android_client_info": {
+          "package_name": "ndroid.bignerd.mydream11"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "688264723643-on07jvlasa4jfqu71vq9t729lmu47i97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeI4m5j_YGjQQ9tRsulAgV_n7aDXB3EPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "688264723643-on07jvlasa4jfqu71vq9t729lmu47i97.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
