@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:688264723643:android:f283de645fbb064eddbd9e",
+        "mobilesdk_app_id": "1:688264723643:android:d6affc017c29e508ddbd9e",
         "android_client_info": {
-          "package_name": "ndroid.bignerd.mydream11"
+          "package_name": "android.bignerd.mydream11"
         }
       },
       "oauth_client": [
