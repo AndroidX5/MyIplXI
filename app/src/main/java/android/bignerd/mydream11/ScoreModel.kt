@@ -5,5 +5,6 @@ data class ScoreModel(
         val battingScore: String,
         val bowlingScore: String,
         val fieldingScore: String,
+        val playing11Score: String,
         val score: String
 )

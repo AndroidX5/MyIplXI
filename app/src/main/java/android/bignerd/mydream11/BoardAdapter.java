@@ -33,7 +33,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final BoardViewHolder holder, int position) {
         if (position == 0) {
-            holder.bind(new ScoreModel("Team", "Bat", "Bowl", "Field", "Total"));
+            holder.bind(new ScoreModel("Team", "Bat", "Bowl", "Field", "11",  "Total"));
         } else {
             holder.bind(scoreModels.get(holder.getAdapterPosition() - 1));
             holder.itemView.setOnClickListener(new View.OnClickListener() {

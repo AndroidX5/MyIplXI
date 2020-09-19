@@ -52,13 +52,15 @@ public class TeamActivity extends AppCompatActivity {
                 float battingPoints = DataProcessor.getBattingPointsPlayer(player.id);
                 float bowlingPoints = DataProcessor.getBowlingPointsPlayer(player.id);
                 float fieldingPoints = DataProcessor.getFieldingPointsPlayer(player.id);
-                float total = battingPoints + bowlingPoints + fieldingPoints;
+                float playing11Points = DataProcessor.getPlaying11PointsPlayer(player.id);
+                float total = battingPoints + bowlingPoints + fieldingPoints + playing11Points;
 
                 list.add(new ScoreModel(
                         player.name,
                         String.valueOf(battingPoints),
                         String.valueOf(bowlingPoints),
                         String.valueOf(fieldingPoints),
+                        String.valueOf(playing11Points),
                         String.valueOf(total))
                 );
             }

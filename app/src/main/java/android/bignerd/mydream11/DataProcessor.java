@@ -37,38 +37,13 @@ public class DataProcessor {
     }
 
     float getTotalPoints(String teamName) {
-        return getTotalBattingPoints(teamName) + getTotalBowlingPoints(teamName) + getTotalFieldingPoints(teamName);
+        return getTotalBattingPoints(teamName) + getTotalBowlingPoints(teamName) +
+                getTotalFieldingPoints(teamName) + getPlaying11PointsPlayer(teamName);
     }
 
     static float getTotalPlayerPoints(String playerId) {
-        float total = 0f;
-        for (Match match : matches) {
-            for (Match.Batting batting : match.batting) {
-                for (Match.Batting.Score score : batting.scores) {
-                    if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
-                        total = total + calculateBattingPoints(score);
-                    }
-                }
-            }
-
-            for (Match.Bowling bowling : match.bowling) {
-                for (Match.Bowling.Score score : bowling.scores) {
-                    if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
-                        total = total + calculateBowlingPoints(score);
-                    }
-                }
-            }
-            if (match.fielding != null) {
-                for (Match.Fielding fielding : match.fielding) {
-                    for (Match.Fielding.Score score : fielding.scores) {
-                        if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
-                            total = total + calculateFieldingPoints(score);
-                        }
-                    }
-                }
-            }
-        }
-        return total;
+        return getBattingPointsPlayer(playerId) + getBowlingPointsPlayer(playerId) +
+                getFieldingPointsPlayer(playerId) + getPlaying11PointsPlayer(playerId);
     }
 
     long getLastUpdatedTime() {
@@ -104,6 +79,15 @@ public class DataProcessor {
         List<String> playersIds = getPlayerIdsOfTeam(teamName);
         for (String playerId : playersIds) {
             total = total + getFieldingPointsPlayer(playerId);
+        }
+        return total;
+    }
+
+    float getTotalPlaying11Points(String teamName) {
+        float total = 0f;
+        List<String> playersIds = getPlayerIdsOfTeam(teamName);
+        for (String playerId : playersIds) {
+            total = total + getPlaying11PointsPlayer(playerId);
         }
         return total;
     }
@@ -148,6 +132,22 @@ public class DataProcessor {
                     for (Match.Fielding.Score score : fielding.scores) {
                         if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
                             total = total + calculateFieldingPoints(score);
+                        }
+                    }
+                }
+            }
+        }
+        return total;
+    }
+
+    static float getPlaying11PointsPlayer(String playerId) {
+        float total = 0f;
+        for (Match match : matches) {
+            if (match.team != null) {
+                for (Match.Team team : match.team) {
+                    for (Match.Team.Player player : team.players) {
+                        if (playerId.equals(player.pid) && match.activePlayers.contains(player.pid)) {
+                            total = total + 4;
                         }
                     }
                 }

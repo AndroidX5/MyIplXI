@@ -11,6 +11,7 @@ class BoardViewHolder extends RecyclerView.ViewHolder{
     private TextView battingScoreView;
     private TextView bowlingScoreTextView;
     private TextView fieldingScoreTextView;
+    private TextView playing11ScoreTextView;
     private TextView scoreTextView;
 
     public BoardViewHolder(@NonNull View itemView) {
@@ -18,7 +19,8 @@ class BoardViewHolder extends RecyclerView.ViewHolder{
         teamTextView = itemView.findViewById(R.id.nameText);
         battingScoreView = itemView.findViewById(R.id.battingScoreText);
         bowlingScoreTextView = itemView.findViewById(R.id.bowlingScoreText);
-        fieldingScoreTextView = itemView.findViewById(R.id.FieldingScoreText);
+        fieldingScoreTextView = itemView.findViewById(R.id.fieldingScoreText);
+        playing11ScoreTextView = itemView.findViewById(R.id.playing11ScoreText);
         scoreTextView = itemView.findViewById(R.id.scoreText);
     }
 
@@ -27,6 +29,7 @@ class BoardViewHolder extends RecyclerView.ViewHolder{
         battingScoreView.setText(model.getBattingScore());
         bowlingScoreTextView.setText(model.getBowlingScore());
         fieldingScoreTextView.setText(model.getFieldingScore());
+        playing11ScoreTextView.setText(model.getPlaying11Score());
         scoreTextView.setText(model.getScore());
     }
 }

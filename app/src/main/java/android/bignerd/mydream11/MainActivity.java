@@ -162,12 +162,14 @@ public class MainActivity extends FragmentActivity {
             float battingPoints = processor.getTotalBattingPoints(team);
             float bowlingPoints = processor.getTotalBowlingPoints(team);
             float fieldingPoints = processor.getTotalFieldingPoints(team);
-            float total = battingPoints + bowlingPoints + fieldingPoints;
+            float playing11Points = processor.getTotalPlaying11Points(team);
+            float total = battingPoints + bowlingPoints + fieldingPoints + playing11Points;
 
             leaderBoardList.add(
                     new ScoreModel(team, String.valueOf(battingPoints),
                             String.valueOf(bowlingPoints),
                             String.valueOf(fieldingPoints),
+                            String.valueOf(playing11Points),
                             String.valueOf(total))
             );
         }

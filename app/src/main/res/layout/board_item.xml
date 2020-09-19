@@ -41,7 +41,18 @@
         tools:ignore="RelativeOverlap" />
 
     <TextView
-        android:id="@+id/FieldingScoreText"
+        android:id="@+id/fieldingScoreText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        tools:ignore="RelativeOverlap" />
+
+    <TextView
+        android:id="@+id/playing11ScoreText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
