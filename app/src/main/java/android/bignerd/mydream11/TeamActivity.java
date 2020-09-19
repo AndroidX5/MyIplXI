@@ -49,7 +49,18 @@ public class TeamActivity extends AppCompatActivity {
 
         for (Player player: players) {
             if (player.team.equals(teamName)) {
-                list.add(new ScoreModel(player.name, DataProcessor.getPlayerPoints(0, player.id)));
+                float battingPoints = DataProcessor.getBattingPointsPlayer(player.id);
+                float bowlingPoints = DataProcessor.getBowlingPointsPlayer(player.id);
+                float fieldingPoints = DataProcessor.getFieldingPointsPlayer(player.id);
+                float total = battingPoints + bowlingPoints + fieldingPoints;
+
+                list.add(new ScoreModel(
+                        player.name,
+                        String.valueOf(battingPoints),
+                        String.valueOf(bowlingPoints),
+                        String.valueOf(fieldingPoints),
+                        String.valueOf(total))
+                );
             }
         }
         return list;

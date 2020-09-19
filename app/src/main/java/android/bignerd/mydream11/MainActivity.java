@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -30,13 +31,20 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class MainActivity extends FragmentActivity {
+
+    DateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy h:mm:ss a", Locale.getDefault());
 
     private RecyclerView recyclerView;
     private BoardAdapter adapter;
@@ -44,6 +52,7 @@ public class MainActivity extends FragmentActivity {
     private View fetchingData;
     private List<Match> allMatches = new ArrayList<>();
     private List<Player> allPlayers = new ArrayList<>();
+    private TextView lastUpdated;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,11 +62,10 @@ public class MainActivity extends FragmentActivity {
         findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                refreshScore(((EditText)findViewById(R.id.match_id)).getText().toString());
+                refreshScore(((EditText) findViewById(R.id.match_id)).getText().toString());
             }
         });
 
-        recyclerView = findViewById(R.id.leaderBoardList);
         leaderBoardContainer = findViewById(R.id.leaderBoardContainer);
         fetchingData = findViewById(R.id.fetchingDataTextView);
 
@@ -72,6 +80,8 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
+        lastUpdated = findViewById(R.id.lastUpdated);
+        recyclerView = findViewById(R.id.leaderBoardList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -89,15 +99,13 @@ public class MainActivity extends FragmentActivity {
 
                 List<Match> matches = new ArrayList<>();
 
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Match match = postSnapshot.getValue(Match.class);
                     matches.add(match);
                 }
 
                 allMatches.clear();
                 allMatches.addAll(matches);
-
-//                processDataAndShowLeaderBoard();
 
                 Log.d("####", "Matches: " + allMatches);
 
@@ -145,12 +153,22 @@ public class MainActivity extends FragmentActivity {
         List<ScoreModel> leaderBoardList = new ArrayList<>();
 
         Set<String> teamNames = new HashSet<>();
-        for (Player player: allPlayers) {
+        for (Player player : allPlayers) {
             teamNames.add(player.team);
         }
 
         for (String team : teamNames) {
-            leaderBoardList.add(new ScoreModel(team, processor.getTotalPoints(team)));
+            float battingPoints = processor.getTotalBattingPoints(team);
+            float bowlingPoints = processor.getTotalBowlingPoints(team);
+            float fieldingPoints = processor.getTotalFieldingPoints(team);
+            float total = battingPoints + bowlingPoints + fieldingPoints;
+
+            leaderBoardList.add(
+                    new ScoreModel(team, String.valueOf(battingPoints),
+                            String.valueOf(bowlingPoints),
+                            String.valueOf(fieldingPoints),
+                            String.valueOf(total))
+            );
         }
         Collections.sort(leaderBoardList, new ScoreComparator());
 
@@ -158,6 +176,11 @@ public class MainActivity extends FragmentActivity {
 
         fetchingData.setVisibility(View.GONE);
         leaderBoardContainer.setVisibility(View.VISIBLE);
+
+        Date date = new Date();
+        date.setTime(processor.getLastUpdatedTime());
+
+        lastUpdated.setText(getString(R.string.last_updated, simpleDateFormat.format(date)));
     }
 
     private void refreshScore(final String matchId) {
@@ -167,7 +190,7 @@ public class MainActivity extends FragmentActivity {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://cricapi.com/api/fantasySummary?apikey=JW51JHLFrRRk94uSt03BNEo7PFw2&unique_id="+matchId;
+        String url = "https://cricapi.com/api/fantasySummary?apikey=JW51JHLFrRRk94uSt03BNEo7PFw2&unique_id=" + matchId;
 
         // Request a string response from the provided URL.
         JsonObjectRequest stringRequest = new JsonObjectRequest
@@ -179,7 +202,7 @@ public class MainActivity extends FragmentActivity {
                             Match match = new Gson().fromJson(response.get("data").toString(), Match.class);
 
                             List<String> activePlayerIds = new ArrayList<>();
-                            for (Player player: allPlayers) {
+                            for (Player player : allPlayers) {
                                 if (player.isActive) {
                                     activePlayerIds.add(player.id);
                                 }
@@ -193,11 +216,11 @@ public class MainActivity extends FragmentActivity {
                         }
                     }
                 }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("####", "onErrorResponse: " + error.getMessage());
-            }
-        });
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("####", "onErrorResponse: " + error.getMessage());
+                    }
+                });
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);

@@ -32,18 +32,28 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final BoardViewHolder holder, int position) {
-        holder.bind(scoreModels.get(holder.getAdapterPosition()));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemClickListener.onItemClicked(scoreModels.get(holder.getAdapterPosition()));
-            }
-        });
+        if (position == 0) {
+            holder.bind(new ScoreModel("Team", "Bat", "Bowl", "Field", "Total"));
+        } else {
+            holder.bind(scoreModels.get(holder.getAdapterPosition()));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onItemClicked(scoreModels.get(holder.getAdapterPosition()));
+                }
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
         return scoreModels.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) return 0;
+        return 1;
     }
 
     void setData(List<ScoreModel> models) {

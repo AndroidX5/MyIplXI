@@ -6,4 +6,5 @@
     <string name="team_bhushan">Bhushan XI</string>
     <string name="team_amar">Amar XI</string>
     <string name="team_mahesh">Mahesh XI</string>
+    <string name="last_updated">Last updated: %s</string>
 </resources>
