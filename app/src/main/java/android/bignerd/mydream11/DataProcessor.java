@@ -92,7 +92,7 @@ public class DataProcessor {
     static float getBattingPointsPlayer(String playerId) {
         float total = 0f;
         for (Match match : matches) {
-            if (match.bowling != null) {
+            if (match.batting != null) {
                 for (Match.Batting batting : match.batting) {
                     for (Match.Batting.Score score : batting.scores) {
                         if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
