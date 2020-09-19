@@ -1,11 +1,7 @@
 package android.bignerd.mydream11;
 
 import android.os.Bundle;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,25 +10,29 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class TeamActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    private RecyclerView recyclerView;
-    private BoardAdapter adapter;
+public class TeamActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.team_activity);
 
-        recyclerView = findViewById(R.id.teamList);
-        adapter = new BoardAdapter(new BoardAdapter.OnItemClickListener() {
+        String teamName = getIntent().getStringExtra("TEAM_NAME");
+        ((TextView)findViewById(R.id.title)).setText(teamName);
+        RecyclerView recyclerView = findViewById(R.id.teamList);
+        // TODO
+        BoardAdapter adapter = new BoardAdapter(new BoardAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(ScoreModel model) {
                 // TODO
             }
         });
 
-        List<ScoreModel> list = getLeadersData();
+        List<ScoreModel> list = getLeadersData(teamName);
         Collections.sort(list, new ScoreComparator());
 
         adapter.setData(list);
@@ -43,23 +43,15 @@ public class TeamActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private List<ScoreModel> getLeadersData() {
+    private List<ScoreModel> getLeadersData(String teamName) {
         List<ScoreModel> list = new ArrayList<>();
-        list.add(new ScoreModel("Warner", 300));
-        list.add(new ScoreModel("Sachin", 126));
-        list.add(new ScoreModel("Rohit", 333));
-        list.add(new ScoreModel("Kohli", 100));
-        list.add(new ScoreModel("MSD", 100));
-        list.add(new ScoreModel("Raina", 55));
-        list.add(new ScoreModel("Dravid", 23));
-        list.add(new ScoreModel("KL", 545));
-        list.add(new ScoreModel("Gayle", 22));
-        list.add(new ScoreModel("Russel", 54));
-        list.add(new ScoreModel("Narine", 111));
-        list.add(new ScoreModel("Umesh", 345));
-        list.add(new ScoreModel("Pandya", 553));
-        list.add(new ScoreModel("Rahane", 253));
-        list.add(new ScoreModel("Ashwin", 643));
+        List<Player> players = DataProcessor.getPlayers();
+
+        for (Player player: players) {
+            if (player.team.equals(teamName)) {
+                list.add(new ScoreModel(player.name, DataProcessor.getPlayerPoints(0, player.id)));
+            }
+        }
         return list;
     }
 }

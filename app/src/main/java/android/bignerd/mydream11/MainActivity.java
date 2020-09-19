@@ -2,12 +2,12 @@ package android.bignerd.mydream11;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -32,7 +32,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends FragmentActivity {
 
@@ -41,6 +43,7 @@ public class MainActivity extends FragmentActivity {
     private View leaderBoardContainer;
     private View fetchingData;
     private List<Match> allMatches = new ArrayList<>();
+    private List<Player> allPlayers = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +66,9 @@ public class MainActivity extends FragmentActivity {
         adapter = new BoardAdapter(new BoardAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(ScoreModel model) {
-                startActivity(new Intent(MainActivity.this, TeamActivity.class));
+                Intent intent = new Intent(MainActivity.this, TeamActivity.class);
+                intent.putExtra("TEAM_NAME", model.getName());
+                startActivity(intent);
             }
         });
 
@@ -92,9 +97,38 @@ public class MainActivity extends FragmentActivity {
                 allMatches.clear();
                 allMatches.addAll(matches);
 
-                processDataAndShowLeaderBoard();
+//                processDataAndShowLeaderBoard();
 
                 Log.d("####", "Matches: " + allMatches);
+
+                DatabaseReference players = FirebaseDatabase.getInstance().getReference("players");
+
+                // Attach a listener to read the data at our posts reference
+                players.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("####", "Matches: " + allMatches);
+
+                        List<Player> players = new ArrayList<>();
+
+                        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                            Player player = postSnapshot.getValue(Player.class);
+                            players.add(player);
+                        }
+
+                        allPlayers.clear();
+                        allPlayers.addAll(players);
+
+                        processDataAndShowLeaderBoard();
+
+                        Log.d("####", "Matches: " + allPlayers);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("####", "DatabaseError: " + databaseError);
+                    }
+                });
             }
 
             @Override
@@ -102,19 +136,22 @@ public class MainActivity extends FragmentActivity {
                 Log.d("####", "DatabaseError: " + databaseError);
             }
         });
+
     }
 
     private void processDataAndShowLeaderBoard() {
-        DataProcessor processor = new DataProcessor(allMatches, this);
+        DataProcessor processor = DataProcessor.getInstance(allMatches, allPlayers);
 
         List<ScoreModel> leaderBoardList = new ArrayList<>();
-        leaderBoardList.add(new ScoreModel(getString(R.string.team_amar), processor.getTotalPoints(getString(R.string.team_amar))));
-        leaderBoardList.add(new ScoreModel(getString(R.string.team_sachin), processor.getTotalPoints(getString(R.string.team_sachin))));
-        leaderBoardList.add(new ScoreModel(getString(R.string.team_yogesh), processor.getTotalPoints(getString(R.string.team_yogesh))));
-        leaderBoardList.add(new ScoreModel(getString(R.string.team_omkar), processor.getTotalPoints(getString(R.string.team_omkar))));
-        leaderBoardList.add(new ScoreModel(getString(R.string.team_mahesh), processor.getTotalPoints(getString(R.string.team_mahesh))));
-        leaderBoardList.add(new ScoreModel(getString(R.string.team_bhushan), processor.getTotalPoints(getString(R.string.team_bhushan))));
 
+        Set<String> teamNames = new HashSet<>();
+        for (Player player: allPlayers) {
+            teamNames.add(player.team);
+        }
+
+        for (String team : teamNames) {
+            leaderBoardList.add(new ScoreModel(team, processor.getTotalPoints(team)));
+        }
         Collections.sort(leaderBoardList, new ScoreComparator());
 
         adapter.setData(leaderBoardList);
@@ -140,6 +177,16 @@ public class MainActivity extends FragmentActivity {
                         try {
                             Log.d("####", "onResponse: " + response.get("data"));
                             Match match = new Gson().fromJson(response.get("data").toString(), Match.class);
+
+                            List<String> activePlayerIds = new ArrayList<>();
+                            for (Player player: allPlayers) {
+                                if (player.isActive) {
+                                    activePlayerIds.add(player.id);
+                                }
+                            }
+                            match.setActivePlayers(activePlayerIds);
+                            match.setUpdated(System.currentTimeMillis());
+
                             database.child("matches").child(matchId).setValue(match);
                         } catch (JSONException e) {
                             e.printStackTrace();
