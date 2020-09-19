@@ -165,9 +165,6 @@ public class DataProcessor {
         } else if (score.runs >= 50) {
             total = total + 8;
         }
-        if (score.runs == 0) {
-            total = total - 2;
-        }
 
         // Strike rate
         Player player = null;
@@ -185,6 +182,11 @@ public class DataProcessor {
             } else if (strikeRate < 70) {
                 total = total - 2;
             }
+        }
+
+        // duck
+        if (score.runs == 0 && player != null && !player.isBowler) {
+            total = total - 2;
         }
 
         return total;
@@ -214,11 +216,13 @@ public class DataProcessor {
                 total = total - 4;
             } else if (economy > 9) {
                 total = total - 2;
-            } else if (economy > 5 && economy < 6) {
+            } else if (economy > 6) {
+                total = total + 0;
+            } else if (economy > 5) {
                 total = total + 2;
             } else if (economy > 4) {
                 total = total + 4;
-            } else {
+            } else if (economy >= 0) {
                 total = total + 6;
             }
         }
