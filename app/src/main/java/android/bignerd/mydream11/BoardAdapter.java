@@ -35,11 +35,11 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardViewHolder> {
         if (position == 0) {
             holder.bind(new ScoreModel("Team", "Bat", "Bowl", "Field", "Total"));
         } else {
-            holder.bind(scoreModels.get(holder.getAdapterPosition()));
+            holder.bind(scoreModels.get(holder.getAdapterPosition() - 1));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClicked(scoreModels.get(holder.getAdapterPosition()));
+                    onItemClickListener.onItemClicked(scoreModels.get(holder.getAdapterPosition() - 1));
                 }
             });
         }
@@ -47,7 +47,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardViewHolder> {
 
     @Override
     public int getItemCount() {
-        return scoreModels.size();
+        return scoreModels.size() + 1;
     }
 
     @Override

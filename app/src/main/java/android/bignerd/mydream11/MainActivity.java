@@ -68,6 +68,7 @@ public class MainActivity extends FragmentActivity {
 
         leaderBoardContainer = findViewById(R.id.leaderBoardContainer);
         fetchingData = findViewById(R.id.fetchingDataTextView);
+        fetchingData.setVisibility(View.VISIBLE);
 
         fetchAllData();
 
