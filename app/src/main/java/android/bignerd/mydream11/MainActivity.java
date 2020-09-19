@@ -2,6 +2,7 @@ package android.bignerd.mydream11;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -176,6 +177,16 @@ public class MainActivity extends FragmentActivity {
                         try {
                             Log.d("####", "onResponse: " + response.get("data"));
                             Match match = new Gson().fromJson(response.get("data").toString(), Match.class);
+
+                            List<String> activePlayerIds = new ArrayList<>();
+                            for (Player player: allPlayers) {
+                                if (player.isActive) {
+                                    activePlayerIds.add(player.id);
+                                }
+                            }
+                            match.setActivePlayers(activePlayerIds);
+                            match.setUpdated(System.currentTimeMillis());
+
                             database.child("matches").child(matchId).setValue(match);
                         } catch (JSONException e) {
                             e.printStackTrace();

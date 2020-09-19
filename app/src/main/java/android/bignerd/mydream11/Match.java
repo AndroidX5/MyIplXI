@@ -13,6 +13,16 @@ public class Match {
     public List<Bowling> bowling;
     @SerializedName("fielding")
     public List<Fielding> fielding;
+    public long updated;
+    public List<String> activePlayers;
+
+    public void setUpdated(long updated) {
+        this.updated = updated;
+    }
+
+    public void setActivePlayers(List<String> players) {
+        this.activePlayers = players;
+    }
 
     public static class Team {
         @SerializedName("name")
