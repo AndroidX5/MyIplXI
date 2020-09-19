@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">My Dream 11</string>
+    <string name="team_sachin">Sachin XI</string>
+    <string name="team_yogesh">Yogesh XI</string>
+    <string name="team_omkar">Omkar XI</string>
+    <string name="team_bhushan">Bhushan XI</string>
+    <string name="team_amar">Amar XI</string>
+    <string name="team_mahesh">Mahesh XI</string>
 </resources>

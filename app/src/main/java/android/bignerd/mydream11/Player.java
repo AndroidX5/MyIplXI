@@ -18,5 +18,4 @@ public class Player {
         this.isActive = isActive;
         this.isBowler = isBowler;
     }
-
 }

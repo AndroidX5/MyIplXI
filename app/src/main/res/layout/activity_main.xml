@@ -1,21 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_gravity="bottom|center">
+    android:layout_height="match_parent"
+    android:background="@color/dark"
+    android:padding="10dp">
 
-    <EditText
-        android:id="@+id/match_id"
-        android:hint="Enter unique match ID"
+    <LinearLayout
+        android:id="@+id/leaderBoardContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    
-    <Button
-        android:text="Refresh"
-        android:id="@+id/refresh"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-</LinearLayout>
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refresh"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/match_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter unique match ID"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:text="Leader Board"
+            android:textColor="@color/yellow"
+            android:textSize="20sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/leaderBoardList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/fetchingDataTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="Fetching data..."
+        android:textColor="@color/yellow"
+        android:visibility="gone"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/lastUpdated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:text="Last updated: 18 Sep 2020"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+</RelativeLayout>
