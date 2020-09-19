@@ -1,9 +1,6 @@
 package android.bignerd.mydream11;
 
-import android.content.Context;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DataProcessor {
