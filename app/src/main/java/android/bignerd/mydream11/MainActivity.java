@@ -64,6 +64,19 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
+        final int[] count = {0};
+        findViewById(R.id.title).setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            if (count[0] >= 5) {
+                                                                findViewById(R.id.admin_container).setVisibility(View.VISIBLE);
+                                                            } else {
+                                                                count[0]++;
+                                                            }
+                                                        }
+                                                    }
+        );
+
         leaderBoardContainer = findViewById(R.id.leaderBoardContainer);
         fetchingData = findViewById(R.id.fetchingDataTextView);
         fetchingData.setVisibility(View.VISIBLE);
@@ -147,7 +160,9 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void processDataAndShowLeaderBoard() {
-        DataProcessor processor = DataProcessor.getInstance(allMatches, allPlayers);
+        DataProcessor processor = DataProcessor.getInstance();
+        processor.setPlayers(allPlayers);
+        processor.setMatches(allMatches);
 
         List<ScoreModel> leaderBoardList = new ArrayList<>();
 
@@ -202,13 +217,13 @@ public class MainActivity extends FragmentActivity {
                             Log.d("####", "onResponse: " + response.get("data"));
                             Match match = new Gson().fromJson(response.get("data").toString(), Match.class);
 
-                            List<String> activePlayerIds = new ArrayList<>();
+                            List<Player> players = new ArrayList<>();
                             for (Player player : allPlayers) {
                                 if (player.isActive) {
-                                    activePlayerIds.add(player.id);
+                                    players.add(player);
                                 }
                             }
-                            match.setActivePlayers(activePlayerIds);
+                            match.setActivePlayers(players);
                             match.setUpdated(System.currentTimeMillis());
 
                             database.child("matches").child(matchId).setValue(match);

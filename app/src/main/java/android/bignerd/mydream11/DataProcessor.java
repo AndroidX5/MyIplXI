@@ -5,42 +5,35 @@ import java.util.List;
 
 public class DataProcessor {
 
-    private static List<Match> matches = new ArrayList<>();
-    private static List<Player> players = new ArrayList<>();
+    private List<Match> matches = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
 
     private static DataProcessor INSTANCE = null;
 
-    private DataProcessor(List<Match> matches, List<Player> players) {
-        DataProcessor.matches.clear();
-        DataProcessor.matches.addAll(matches);
-
-        DataProcessor.players.clear();
-        DataProcessor.players.addAll(players);
+    private DataProcessor() {
     }
 
-    static DataProcessor getInstance(List<Match> matches, List<Player> players) {
+    static DataProcessor getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new DataProcessor(matches, players);
+            INSTANCE = new DataProcessor();
         }
         return INSTANCE;
     }
 
-    static List<Player> getPlayers() {
-        return players;
-    }
-
-    public static List<Match> getMatches() {
+    public List<Match> getMatches() {
         return matches;
     }
 
-    float getTotalPoints(String teamName) {
-        return getTotalBattingPoints(teamName) + getTotalBowlingPoints(teamName) +
-                getTotalFieldingPoints(teamName) + getPlaying11PointsPlayer(teamName);
+    public void setMatches(List<Match> matches) {
+        this.matches = matches;
     }
 
-    static float getTotalPlayerPoints(String playerId) {
-        return getBattingPointsPlayer(playerId) + getBowlingPointsPlayer(playerId) +
-                getFieldingPointsPlayer(playerId) + getPlaying11PointsPlayer(playerId);
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     long getLastUpdatedTime() {
@@ -55,49 +48,59 @@ public class DataProcessor {
 
     float getTotalBattingPoints(String teamName) {
         float total = 0f;
-        List<String> playersIds = getPlayerIdsOfTeam(teamName);
-        for (String playerId : playersIds) {
-            total = total + getBattingPointsPlayer(playerId);
+        for (Match match: matches) {
+            for (Player player: match.activePlayers) {
+                if (player.team.equalsIgnoreCase(teamName)) {
+                    total = total + getBattingPointsPlayer(match, player.id);
+                }
+            }
         }
         return total;
     }
 
     float getTotalBowlingPoints(String teamName) {
         float total = 0f;
-        List<String> playersIds = getPlayerIdsOfTeam(teamName);
-        for (String playerId : playersIds) {
-            total = total + getBowlingPointsPlayer(playerId);
+        for (Match match: matches) {
+            for (Player player: match.activePlayers) {
+                if (player.team.equalsIgnoreCase(teamName)) {
+                    total = total + getBowlingPointsPlayer(match, player.id);
+                }
+            }
         }
         return total;
     }
 
     float getTotalFieldingPoints(String teamName) {
         float total = 0f;
-        List<String> playersIds = getPlayerIdsOfTeam(teamName);
-        for (String playerId : playersIds) {
-            total = total + getFieldingPointsPlayer(playerId);
+        for (Match match: matches) {
+            for (Player player: match.activePlayers) {
+                if (player.team.equalsIgnoreCase(teamName)) {
+                    total = total + getFieldingPointsPlayer(match, player.id);
+                }
+            }
         }
         return total;
     }
 
     float getTotalPlaying11Points(String teamName) {
         float total = 0f;
-        List<String> playersIds = getPlayerIdsOfTeam(teamName);
-        for (String playerId : playersIds) {
-            total = total + getPlaying11PointsPlayer(playerId);
+        for (Match match: matches) {
+            for (Player player: match.activePlayers) {
+                if (player.team.equalsIgnoreCase(teamName)) {
+                    total = total + getPlaying11PointsPlayer(match, player.id);
+                }
+            }
         }
         return total;
     }
 
-    static float getBattingPointsPlayer(String playerId) {
+    float getBattingPointsPlayer(Match match, String playerId) {
         float total = 0f;
-        for (Match match : matches) {
-            if (match.batting != null) {
-                for (Match.Batting batting : match.batting) {
-                    for (Match.Batting.Score score : batting.scores) {
-                        if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
-                            total = total + calculateBattingPoints(score);
-                        }
+        if (match.batting != null) {
+            for (Match.Batting batting : match.batting) {
+                for (Match.Batting.Score score : batting.scores) {
+                    if (playerId.equals(score.pid) && isPlayerActiveForTheMatch(match, score.pid)) {
+                        total = total + calculateBattingPoints(match, score);
                     }
                 }
             }
@@ -105,15 +108,13 @@ public class DataProcessor {
         return total;
     }
 
-    static float getBowlingPointsPlayer(String playerId) {
+    float getBowlingPointsPlayer(Match match, String playerId) {
         float total = 0f;
-        for (Match match : matches) {
-            if (match.bowling != null) {
-                for (Match.Bowling bowling : match.bowling) {
-                    for (Match.Bowling.Score score : bowling.scores) {
-                        if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
-                            total = total + calculateBowlingPoints(score);
-                        }
+        if (match.bowling != null) {
+            for (Match.Bowling bowling : match.bowling) {
+                for (Match.Bowling.Score score : bowling.scores) {
+                    if (playerId.equals(score.pid) && isPlayerActiveForTheMatch(match, score.pid)) {
+                        total = total + calculateBowlingPoints(score);
                     }
                 }
             }
@@ -121,15 +122,13 @@ public class DataProcessor {
         return total;
     }
 
-    static float getFieldingPointsPlayer(String playerId) {
+    float getFieldingPointsPlayer(Match match, String playerId) {
         float total = 0f;
-        for (Match match : matches) {
-            if (match.fielding != null) {
-                for (Match.Fielding fielding : match.fielding) {
-                    for (Match.Fielding.Score score : fielding.scores) {
-                        if (playerId.equals(score.pid) && match.activePlayers.contains(score.pid)) {
-                            total = total + calculateFieldingPoints(score);
-                        }
+        if (match.fielding != null) {
+            for (Match.Fielding fielding : match.fielding) {
+                for (Match.Fielding.Score score : fielding.scores) {
+                    if (playerId.equals(score.pid) && isPlayerActiveForTheMatch(match, score.pid)) {
+                        total = total + calculateFieldingPoints(score);
                     }
                 }
             }
@@ -137,15 +136,13 @@ public class DataProcessor {
         return total;
     }
 
-    static float getPlaying11PointsPlayer(String playerId) {
+    float getPlaying11PointsPlayer(Match match, String playerId) {
         float total = 0f;
-        for (Match match : matches) {
-            if (match.team != null) {
-                for (Match.Team team : match.team) {
-                    for (Match.Team.Player player : team.players) {
-                        if (playerId.equals(player.pid) && match.activePlayers.contains(player.pid)) {
-                            total = total + 4;
-                        }
+        if (match.team != null) {
+            for (Match.Team team : match.team) {
+                for (Match.Team.Player player : team.players) {
+                    if (playerId.equals(player.pid) && isPlayerActiveForTheMatch(match, player.pid)) {
+                        total = total + 4;
                     }
                 }
             }
@@ -153,7 +150,17 @@ public class DataProcessor {
         return total;
     }
 
-    private static float calculateBattingPoints(Match.Batting.Score score) {
+    private static boolean isPlayerActiveForTheMatch(Match match, String playerId) {
+        for (Player player: match.activePlayers) {
+            if (player.id.equals(playerId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static float calculateBattingPoints(Match match, Match.Batting.Score score) {
         float total = 0;
 
         total = total + score.runs;
@@ -168,7 +175,7 @@ public class DataProcessor {
 
         // Strike rate
         Player player = null;
-        for (Player player1 : players) {
+        for (Player player1 : match.activePlayers) {
             if (score.pid.equals(player1.id)) {
                 player = player1;
             }
@@ -185,7 +192,8 @@ public class DataProcessor {
         }
 
         // duck
-        if (score.runs == 0 && player != null && !player.isBowler) {
+        if (score.runs == 0 && player != null && !player.isBowler
+                && !(score.dismissalInfo!= null && (score.dismissalInfo.equalsIgnoreCase("not out") || score.dismissalInfo.isEmpty()))) {
             total = total - 2;
         }
 
@@ -214,13 +222,13 @@ public class DataProcessor {
                 total = total - 6;
             } else if (economy > 10) {
                 total = total - 4;
-            } else if (economy > 9) {
+            } else if (economy >= 9) {
                 total = total - 2;
             } else if (economy > 6) {
                 total = total + 0;
-            } else if (economy > 5) {
+            } else if (economy >= 5) {
                 total = total + 2;
-            } else if (economy > 4) {
+            } else if (economy >= 4) {
                 total = total + 4;
             } else if (economy >= 0) {
                 total = total + 6;
@@ -237,15 +245,5 @@ public class DataProcessor {
         total = total + (score.stumped * 12);
 
         return total;
-    }
-
-    private static List<String> getPlayerIdsOfTeam(String teamName) {
-        List<String> playersId = new ArrayList<>();
-        for (Player player : players) {
-            if (player.team.equals(teamName)) {
-                playersId.add(player.id);
-            }
-        }
-        return playersId;
     }
 }

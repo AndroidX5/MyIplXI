@@ -14,13 +14,13 @@ public class Match {
     @SerializedName("fielding")
     public List<Fielding> fielding;
     public long updated;
-    public List<String> activePlayers;
+    public List<Player> activePlayers;
 
     public void setUpdated(long updated) {
         this.updated = updated;
     }
 
-    public void setActivePlayers(List<String> players) {
+    public void setActivePlayers(List<Player> players) {
         this.activePlayers = players;
     }
 
@@ -56,6 +56,8 @@ public class Match {
             public int sixes;
             @SerializedName("SR")
             public int sr;
+            @SerializedName("dismissal-info")
+            public String dismissalInfo;
         }
     }
 

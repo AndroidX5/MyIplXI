@@ -45,16 +45,24 @@ public class TeamActivity extends AppCompatActivity {
     @NonNull
     private List<ScoreModel> getLeadersData(String teamName) {
         List<ScoreModel> list = new ArrayList<>();
-        List<Player> players = DataProcessor.getPlayers();
+        DataProcessor dataProcessor = DataProcessor.getInstance();
+        List<Player> players = dataProcessor.getPlayers();
+        List<Match> matches = dataProcessor.getMatches();
 
-        for (Player player: players) {
+
+        for (Player player : players) {
             if (player.team.equals(teamName)) {
-                float battingPoints = DataProcessor.getBattingPointsPlayer(player.id);
-                float bowlingPoints = DataProcessor.getBowlingPointsPlayer(player.id);
-                float fieldingPoints = DataProcessor.getFieldingPointsPlayer(player.id);
-                float playing11Points = DataProcessor.getPlaying11PointsPlayer(player.id);
+                float battingPoints = 0;
+                float bowlingPoints = 0;
+                float fieldingPoints = 0;
+                float playing11Points = 0;
+                for (Match match : matches) {
+                    battingPoints += dataProcessor.getBattingPointsPlayer(match, player.id);
+                    bowlingPoints += dataProcessor.getBowlingPointsPlayer(match, player.id);
+                    fieldingPoints += dataProcessor.getFieldingPointsPlayer(match, player.id);
+                    playing11Points += dataProcessor.getPlaying11PointsPlayer(match, player.id);
+                }
                 float total = battingPoints + bowlingPoints + fieldingPoints + playing11Points;
-
                 list.add(new ScoreModel(
                         player.name,
                         String.valueOf(battingPoints),

@@ -6,7 +6,6 @@ public class Player {
     public String team;
     public boolean isActive;
     public boolean isBowler;
-    public int[] matches;
 
     public Player() {
     }
